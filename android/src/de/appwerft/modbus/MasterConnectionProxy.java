@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
@@ -19,61 +21,99 @@ import net.wimpi.modbus.msg.ReadInputDiscretesResponse;
 import net.wimpi.modbus.net.TCPMasterConnection;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiC;
+
+import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = ModbusModule.class)
 public class MasterConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
-	private int ref = 0;
-	private int count = 0;
-	private int repeat = 1;
-	private ModbusTCPTransaction trans;
 
-	// Handle creation options
+	private final class ModBusHandler extends
+			AsyncTask<KrollDict, Void, List<KrollDict>> {
+		private KrollFunction onLoad;
+
+		@Override
+		protected List<KrollDict> doInBackground(KrollDict... opts) {
+			KrollDict options = opts[0];
+			List<KrollDict> resList = new ArrayList<KrollDict>();
+			int ref = 0;
+			int count = 0;
+			int repeat = 1;
+
+			ModbusTCPTransaction trans;
+			if (options.containsKeyAndNotNull(TiC.PROPERTY_ONLOAD))
+				onLoad = (KrollFunction) options.get(TiC.PROPERTY_ONLOAD);
+			if (options.containsKeyAndNotNull("ref"))
+				ref = options.getInt("ref");
+			if (options.containsKeyAndNotNull("count"))
+				ref = options.getInt("count");
+			if (options.containsKeyAndNotNull("repeat"))
+				ref = options.getInt("repeat");
+			URL url = null;
+			if (options.containsKeyAndNotNull(TiC.PROPERTY_URL)) {
+				try {
+					url = new URL(options.getString(TiC.PROPERTY_URL));
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (url != null)
+				try {
+					TCPMasterConnection con = new TCPMasterConnection(
+							InetAddress.getByName(url.getHost()));
+					trans = new ModbusTCPTransaction(con);
+
+					int k = 0;
+					do {
+						try {
+							trans.execute();
+						} catch (ModbusException e) {
+							e.printStackTrace();
+						}
+						ReadInputDiscretesResponse res = (ReadInputDiscretesResponse) trans
+								.getResponse();
+						KrollDict result = new KrollDict();
+						result.put("bitcount", res.getBitCount());
+						result.put("datalength", res.getDataLength());
+						KrollDict discretes = new KrollDict();
+						discretes
+								.put("bytesize", res.getDiscretes().byteSize());
+						discretes.put("isLSBAccess", res.getDiscretes()
+								.isLSBAccess());
+						discretes.put("isMSBAccess", res.getDiscretes()
+								.isMSBAccess());
+						discretes.put("bytes", org.appcelerator.titanium.TiBlob
+								.blobFromData(res.getDiscretes().getBytes()));
+						result.put("discretes", discretes);
+						resList.add(result);
+						k++;
+					} while (k < repeat);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				}
+			return resList;
+		}
+
+		protected void onPostExecute(List<KrollDict> resultList) {
+			if (onLoad != null)
+				onLoad.call(getKrollObject(), resultList.toArray());
+		}
+
+	}
+
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
-		if (options.containsKeyAndNotNull("ref"))
-			ref = options.getInt("ref");
-		if (options.containsKeyAndNotNull("count"))
-			ref = options.getInt("count");
-		if (options.containsKeyAndNotNull("repeat"))
-			ref = options.getInt("repeat");
-		URL url = null;
-		if (options.containsKeyAndNotNull(TiC.PROPERTY_URL)) {
-			try {
-				url = new URL(options.getString(TiC.PROPERTY_URL));
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-		}
-		if (url != null)
-			try {
-				TCPMasterConnection con = new TCPMasterConnection(
-						InetAddress.getByName(url.getHost()));
-				trans = new ModbusTCPTransaction(con);
+		AsyncTask<KrollDict, Void, List<KrollDict>> doRequest = new ModBusHandler();
+		doRequest.execute(options);
 
-				int k = 0;
-				do {
-					try {
-						trans.execute();
-					} catch (ModbusException e) {
-						e.printStackTrace();
-					}
-					ReadInputDiscretesResponse res = (ReadInputDiscretesResponse) trans
-							.getResponse();
-					Log.d(LCAT, "Digital Inputs Status="
-							+ res.getDiscretes().toString());
-					k++;
-				} while (k < repeat);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
 	}
 
 }
