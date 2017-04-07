@@ -34,6 +34,7 @@ import android.os.AsyncTask;
 public class MasterConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
+	static int DEFAULTPORT = 502;
 
 	private final class ModBusHandler extends
 			AsyncTask<KrollDict, Void, List<KrollDict>> {
@@ -46,8 +47,8 @@ public class MasterConnectionProxy extends KrollProxy {
 			int ref = 0;
 			int count = 0;
 			int repeat = 1;
-
-			ModbusTCPTransaction trans;
+			ModbusTCPTransaction transaction;
+			/* import options */
 			if (options.containsKeyAndNotNull(TiC.PROPERTY_ONLOAD))
 				onLoad = (KrollFunction) options.get(TiC.PROPERTY_ONLOAD);
 			if (options.containsKeyAndNotNull("ref"))
@@ -68,29 +69,35 @@ public class MasterConnectionProxy extends KrollProxy {
 				try {
 					TCPMasterConnection con = new TCPMasterConnection(
 							InetAddress.getByName(url.getHost()));
-					trans = new ModbusTCPTransaction(con);
+					int port = DEFAULTPORT;
+					if (url.getPort() != 0) {
+						con.setPort(port);
+					} else
+						con.setPort(DEFAULTPORT);
+					transaction = new ModbusTCPTransaction(con);
 
 					int k = 0;
 					do {
 						try {
-							trans.execute();
+							transaction.execute();
 						} catch (ModbusException e) {
 							e.printStackTrace();
 						}
-						ReadInputDiscretesResponse res = (ReadInputDiscretesResponse) trans
+						ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) transaction
 								.getResponse();
 						KrollDict result = new KrollDict();
-						result.put("bitcount", res.getBitCount());
-						result.put("datalength", res.getDataLength());
+						result.put("bitcount", response.getBitCount());
+						result.put("datalength", response.getDataLength());
 						KrollDict discretes = new KrollDict();
-						discretes
-								.put("bytesize", res.getDiscretes().byteSize());
-						discretes.put("isLSBAccess", res.getDiscretes()
+						discretes.put("bytesize", response.getDiscretes()
+								.byteSize());
+						discretes.put("isLSBAccess", response.getDiscretes()
 								.isLSBAccess());
-						discretes.put("isMSBAccess", res.getDiscretes()
+						discretes.put("isMSBAccess", response.getDiscretes()
 								.isMSBAccess());
 						discretes.put("bytes", org.appcelerator.titanium.TiBlob
-								.blobFromData(res.getDiscretes().getBytes()));
+								.blobFromData(response.getDiscretes()
+										.getBytes()));
 						result.put("discretes", discretes);
 						resList.add(result);
 						k++;
@@ -98,6 +105,8 @@ public class MasterConnectionProxy extends KrollProxy {
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				}
+			else
+				Log.e(LCAT, "URL invalide or empty");
 			return resList;
 		}
 
