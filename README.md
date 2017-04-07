@@ -45,5 +45,3 @@ Modbus.createMasterConnection({
 });
 
 ```
-
-
