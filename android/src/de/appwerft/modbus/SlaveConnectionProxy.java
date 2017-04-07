@@ -25,7 +25,7 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiC;
 
 @Kroll.proxy(creatableInModule = ModbusModule.class)
-public class MasterConnectionProxy extends KrollProxy {
+public class SlaveConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
 	private int ref = 0;
