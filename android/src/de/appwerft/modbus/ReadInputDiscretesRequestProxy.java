@@ -32,7 +32,12 @@ import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = ModbusModule.class)
-public class MasterConnectionProxy extends KrollProxy {
+public class ReadInputDiscretesRequestProxy extends KrollProxy {
+
+	public ReadInputDiscretesRequestProxy(KrollDict opts) {
+
+	}
+
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
 	static int DEFAULTPORT = 502;
@@ -70,15 +75,15 @@ public class MasterConnectionProxy extends KrollProxy {
 			if (url != null)
 				try {
 					// Open the connection
-					con = new TCPMasterConnection(
-							InetAddress.getByName(url.getHost()));
+					con = new TCPMasterConnection(InetAddress.getByName(url
+							.getHost()));
 					int port = DEFAULTPORT;
 					if (url.getPort() != 0) {
 						con.setPort(port);
 					} else
 						con.setPort(DEFAULTPORT);
 					con.connect();
-					
+
 					// Prepare the request
 					ReadInputDiscretesRequest req = new ReadInputDiscretesRequest(
 							ref, count);

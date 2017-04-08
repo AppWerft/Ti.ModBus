@@ -46,43 +46,43 @@ var Connection = Modbus.createMasterConnection({
 	ref : 1,
 	timeout : 3000
 });
-Connection.readInputDiscretesRequest({
+Connection.createReadInputDiscretesRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.readCoilsRequest({
+Connection.createReadCoilsRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.writeCoilsRequest({
+Connection.createWriteCoilsRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.readInputRegistersRequest({
+Connection.createReadInputRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}  
 });
-Connection.writeInputRegistersRequest({
+Connection.createWriteInputRegistersRequest({
 	onLoad : function() {
 	},   
 	onError : function() {
 	}
 });
-Connection.readMultipleRegistersRequest({
+Connection.createReadMultipleRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.writeMultipleRegistersRequest({
+Connection.createWriteMultipleRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
