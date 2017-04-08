@@ -34,8 +34,8 @@ The stateless communication is based on a simple package, that is called Protoco
 ![](http://jamod.sourceforge.net/images/modbus_pdu.png)
 
 
-Quick start
------------
+Quick start Master
+------------------
 
 ```javascript
 var Modbus = require("de.appwerft.modbus");
@@ -46,46 +46,63 @@ var Connection = Modbus.createMasterConnection({
 	ref : 1,
 	timeout : 3000
 });
-Connection.createReadInputDiscretesRequest({
+Connection.readInputDiscretesRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.createReadCoilsRequest({
+Connection.readCoilsRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.createWriteCoilsRequest({
+Connection.writeCoilsRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.createReadInputRegistersRequest({
+Connection.readInputRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}  
 });
-Connection.createWriteInputRegistersRequest({
+Connection.writeInputRegistersRequest({
 	onLoad : function() {
 	},   
 	onError : function() {
 	}
 });
-Connection.createReadMultipleRegistersRequest({
+Connection.readMultipleRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
-Connection.createWriteMultipleRegistersRequest({
+Connection.writeMultipleRegistersRequest({
 	onLoad : function() {
 	},
 	onError : function() {
 	}
 });
 ```
+
+Quick start Slave
+------------------
+
+```javascript
+var Modbus = require("de.appwerft.modbus");
+
+var spi = Modbus.createSimpleProcessImage();
+spi.addDigitalOut(Modbus.createSimpleDigitalOut(true));
+Modbus.Coupler.setProcessImage(spi);
+
+var Slave = Modbus.createModbusTCPListener({
+	threadpoolsize : 3,
+	port : Modbus.DEFAULT_PORT
+});
+```
+

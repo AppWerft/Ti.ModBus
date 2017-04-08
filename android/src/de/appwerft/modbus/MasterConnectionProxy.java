@@ -23,6 +23,7 @@ import net.wimpi.modbus.net.TCPMasterConnection;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
+import org.appcelerator.kroll.KrollObject;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
@@ -35,10 +36,16 @@ import android.os.AsyncTask;
 public class MasterConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
+	TCPMasterConnection conn;
 	static int DEFAULTPORT = 502;
 	int ref = 0;
 	int count = 0;
 	int repeat = 1;
+	public KrollObject krollObject = getKrollObject();
+
+	public TCPMasterConnection getConnection() {
+		return conn;
+	}
 
 	private void createConn(KrollDict opts) {
 		KrollDict options = opts;
@@ -59,13 +66,13 @@ public class MasterConnectionProxy extends KrollProxy {
 		if (url != null)
 			try {
 				// Open the connection
-				TCPMasterConnection con = new TCPMasterConnection(
-						InetAddress.getByName(url.getHost()));
+				conn = new TCPMasterConnection(InetAddress.getByName(url
+						.getHost()));
 				int port = DEFAULTPORT;
 				if (url.getPort() != 0) {
-					con.setPort(port);
+					conn.setPort(port);
 				} else
-					con.setPort(DEFAULTPORT);
+					conn.setPort(DEFAULTPORT);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -79,14 +86,12 @@ public class MasterConnectionProxy extends KrollProxy {
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
 		createConn(options);
-
 	}
 
 	@Kroll.method
-	public ReadInputDiscretesRequestProxy createReadInputDiscretesRequest(
-			KrollDict opts) {
-		ReadInputDiscretesRequestProxy proxy = new ReadInputDiscretesRequestProxy(
-				opts);
-		return proxy;
+	public void readInputDiscretesRequest(KrollDict opts) {
+
+		TiReadInputDiscretesRequest req = new TiReadInputDiscretesRequest(this);
+
 	}
 }
