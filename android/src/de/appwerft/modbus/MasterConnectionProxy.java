@@ -11,24 +11,14 @@ package de.appwerft.modbus;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
-import net.wimpi.modbus.ModbusException;
-import net.wimpi.modbus.io.ModbusTCPTransaction;
-import net.wimpi.modbus.msg.ReadInputDiscretesRequest;
-import net.wimpi.modbus.msg.ReadInputDiscretesResponse;
 import net.wimpi.modbus.net.TCPMasterConnection;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiC;
-
-import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = ModbusModule.class)
@@ -36,17 +26,13 @@ public class MasterConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
 	static int DEFAULTPORT = 502;
+	public int ref = 0;
+	public int count = 0;
+	public int repeat = 1;
+	TCPMasterConnection conn;
 
 	void createConn(KrollDict options) {
-
-		List<KrollDict> resList = new ArrayList<KrollDict>();
-		int ref = 0;
-		int count = 0;
-		int repeat = 1;
-		ModbusTCPTransaction transaction;
 		/* import options */
-		if (options.containsKeyAndNotNull(TiC.PROPERTY_ONLOAD))
-			onLoad = (KrollFunction) options.get(TiC.PROPERTY_ONLOAD);
 		if (options.containsKeyAndNotNull("ref"))
 			ref = options.getInt("ref");
 		if (options.containsKeyAndNotNull("count"))
@@ -64,13 +50,13 @@ public class MasterConnectionProxy extends KrollProxy {
 		if (url != null)
 			try {
 				// Open the connection
-				TCPMasterConnection con = new TCPMasterConnection(
-						InetAddress.getByName(url.getHost()));
+				conn = new TCPMasterConnection(InetAddress.getByName(url
+						.getHost()));
 				int port = DEFAULTPORT;
 				if (url.getPort() != 0) {
-					con.setPort(port);
+					conn.setPort(port);
 				} else
-					con.setPort(DEFAULTPORT);
+					conn.setPort(DEFAULTPORT);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -83,7 +69,5 @@ public class MasterConnectionProxy extends KrollProxy {
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
 		createConn(options);
-
 	}
-
 }
