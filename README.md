@@ -40,13 +40,14 @@ Quick start
 ```javascript
 var Modbus = require("de.appwerft.modbus");
 
-Modbus.createMasterConnection({
+var Connection = Modbus.createMasterConnection({
 	url : "modbus://192.168.0.1:502",
 	count : 3,
 	ref : 1,
-	onload : function(e) {
-		
+	timeout : 3000
+});
+Connection.createReadInputDiscretesRequest({
+	onLoad : function() {
 	}
 });
-
 ```

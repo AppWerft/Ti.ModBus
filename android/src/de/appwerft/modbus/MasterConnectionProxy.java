@@ -17,6 +17,7 @@ import java.util.List;
 
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
+import net.wimpi.modbus.msg.ReadInputDiscretesRequest;
 import net.wimpi.modbus.msg.ReadInputDiscretesResponse;
 import net.wimpi.modbus.net.TCPMasterConnection;
 
@@ -36,92 +37,52 @@ public class MasterConnectionProxy extends KrollProxy {
 	private static final String LCAT = "Modbus";
 	static int DEFAULTPORT = 502;
 
-	private final class ModBusHandler extends
-			AsyncTask<KrollDict, Void, List<KrollDict>> {
-		private KrollFunction onLoad;
+	void createConn(KrollDict options) {
 
-		@Override
-		protected List<KrollDict> doInBackground(KrollDict... opts) {
-			KrollDict options = opts[0];
-			List<KrollDict> resList = new ArrayList<KrollDict>();
-			int ref = 0;
-			int count = 0;
-			int repeat = 1;
-			ModbusTCPTransaction transaction;
-			/* import options */
-			if (options.containsKeyAndNotNull(TiC.PROPERTY_ONLOAD))
-				onLoad = (KrollFunction) options.get(TiC.PROPERTY_ONLOAD);
-			if (options.containsKeyAndNotNull("ref"))
-				ref = options.getInt("ref");
-			if (options.containsKeyAndNotNull("count"))
-				ref = options.getInt("count");
-			if (options.containsKeyAndNotNull("repeat"))
-				ref = options.getInt("repeat");
-			URL url = null;
-			if (options.containsKeyAndNotNull(TiC.PROPERTY_URL)) {
-				try {
-					url = new URL(options.getString(TiC.PROPERTY_URL));
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
+		List<KrollDict> resList = new ArrayList<KrollDict>();
+		int ref = 0;
+		int count = 0;
+		int repeat = 1;
+		ModbusTCPTransaction transaction;
+		/* import options */
+		if (options.containsKeyAndNotNull(TiC.PROPERTY_ONLOAD))
+			onLoad = (KrollFunction) options.get(TiC.PROPERTY_ONLOAD);
+		if (options.containsKeyAndNotNull("ref"))
+			ref = options.getInt("ref");
+		if (options.containsKeyAndNotNull("count"))
+			ref = options.getInt("count");
+		if (options.containsKeyAndNotNull("repeat"))
+			ref = options.getInt("repeat");
+		URL url = null;
+		if (options.containsKeyAndNotNull(TiC.PROPERTY_URL)) {
+			try {
+				url = new URL(options.getString(TiC.PROPERTY_URL));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
 			}
-			if (url != null)
-				try {
-					TCPMasterConnection con = new TCPMasterConnection(
-							InetAddress.getByName(url.getHost()));
-					int port = DEFAULTPORT;
-					if (url.getPort() != 0) {
-						con.setPort(port);
-					} else
-						con.setPort(DEFAULTPORT);
-					transaction = new ModbusTCPTransaction(con);
-
-					int k = 0;
-					do {
-						try {
-							transaction.execute();
-						} catch (ModbusException e) {
-							e.printStackTrace();
-						}
-						ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) transaction
-								.getResponse();
-						KrollDict result = new KrollDict();
-						result.put("bitcount", response.getBitCount());
-						result.put("datalength", response.getDataLength());
-						KrollDict discretes = new KrollDict();
-						discretes.put("bytesize", response.getDiscretes()
-								.byteSize());
-						discretes.put("isLSBAccess", response.getDiscretes()
-								.isLSBAccess());
-						discretes.put("isMSBAccess", response.getDiscretes()
-								.isMSBAccess());
-						discretes.put("bytes", org.appcelerator.titanium.TiBlob
-								.blobFromData(response.getDiscretes()
-										.getBytes()));
-						result.put("discretes", discretes);
-						resList.add(result);
-						k++;
-					} while (k < repeat);
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-			else
-				Log.e(LCAT, "URL invalide or empty");
-			return resList;
 		}
-
-		protected void onPostExecute(List<KrollDict> resultList) {
-			if (onLoad != null)
-				onLoad.call(getKrollObject(), resultList.toArray());
-		}
+		if (url != null)
+			try {
+				// Open the connection
+				TCPMasterConnection con = new TCPMasterConnection(
+						InetAddress.getByName(url.getHost()));
+				int port = DEFAULTPORT;
+				if (url.getPort() != 0) {
+					con.setPort(port);
+				} else
+					con.setPort(DEFAULTPORT);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		else
+			Log.e(LCAT, "URL invalide or empty");
 
 	}
 
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
-		AsyncTask<KrollDict, Void, List<KrollDict>> doRequest = new ModBusHandler();
-		doRequest.execute(options);
+		createConn(options);
 
 	}
 
