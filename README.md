@@ -98,7 +98,11 @@ var Modbus = require("de.appwerft.modbus");
 
 var spi = Modbus.createSimpleProcessImage();
 spi.addDigitalOut(Modbus.createSimpleDigitalOut(true));
+spi.addDigitalIn(Modbus.createSimpleDigitalIn(true));
+
 Modbus.Coupler.setProcessImage(spi);
+Modbus.Coupler.setMaster(false);
+Modbus.Coupler.setUnitID(312);
 
 var Slave = Modbus.createModbusTCPListener({
 	threadpoolsize : 3,

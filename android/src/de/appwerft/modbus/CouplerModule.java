@@ -8,17 +8,16 @@
  */
 package de.appwerft.modbus;
 
+import net.wimpi.modbus.ModbusCoupler;
+
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.kroll.common.Log;
-import org.appcelerator.kroll.common.TiConfig;
 
-@Kroll.module(name = "Modbus", id = "de.appwerft.modbus")
-public class ModbusModule extends KrollModule {
+@Kroll.module(parentModule = ModbusModule.class)
+public class CouplerModule extends KrollModule {
 
-	public ModbusModule() {
+	public CouplerModule() {
 		super();
 	}
 
@@ -26,4 +25,19 @@ public class ModbusModule extends KrollModule {
 	public static void onAppCreate(TiApplication app) {
 	}
 
+	@Kroll.method
+	public void setProcessImage(SimpleProcessImageProxy proxy) {
+		ModbusCoupler.getReference().setProcessImage(proxy.spi);
+	}
+
+	@Kroll.method
+	public void setMaster(Object o) {
+		if (o instanceof Boolean)
+			ModbusCoupler.getReference().setMaster((boolean) o);
+	}
+
+	@Kroll.method
+	public void setUnitID(int id) {
+		ModbusCoupler.getReference().setUnitID(id);
+	}
 }

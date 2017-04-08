@@ -12,6 +12,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/fuerst/Documents/APPC_WORKSPACE/Ti.ModBus/android/lib/jamod-1.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/fuerst/Documents/APPC_WORKSPACE/Ti.ModBus/android/lib/jamod-1.2-SNAPSHOT.jar" sourcepath="android/jamod-1.2-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
