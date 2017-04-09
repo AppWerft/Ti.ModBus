@@ -49,10 +49,10 @@ var Connection = Modbus.createMasterConnection({
 	type : ModBus.TYPE_TCP // or ModBus.TYPE_UDP
 });
 
-Connection.request({
-	Modbus.READ_MULTIPLE_REGISTERS,
-	function() {/* success */},
-	function() {/* error */}
+Connection.createRequest({
+	functionId : Modbus.READ_MULTIPLE_REGISTERS,
+	onload : function() {/* success */},
+	onerror : function() {/* error */}
 });
 ```
 Available functionIds:

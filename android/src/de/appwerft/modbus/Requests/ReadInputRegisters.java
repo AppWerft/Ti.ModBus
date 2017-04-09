@@ -13,23 +13,31 @@ import java.util.List;
 
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
-import net.wimpi.modbus.msg.ReadCoilsRequest;
-import net.wimpi.modbus.msg.ReadCoilsResponse;
+import net.wimpi.modbus.msg.ReadInputRegistersRequest;
+import net.wimpi.modbus.msg.ReadInputRegistersResponse;
+import net.wimpi.modbus.procimg.InputRegister;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 
 import de.appwerft.modbus.MasterConnectionProxy;
+import de.appwerft.modbus.RequestProxy;
 import android.os.AsyncTask;
 
-public class ReadRegisters {
+public class ReadInputRegisters {
 	KrollProxy proxy;
 
-	public ReadRegisters(MasterConnectionProxy proxy) {
+	public ReadInputRegisters(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
-		doRequest.execute(proxy);
+		doRequest.execute();
+	}
+
+	public ReadInputRegisters(RequestProxy proxy) {
+		this.proxy = proxy;
+		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
+		doRequest.execute();
 	}
 
 	private final class ModBusHandler extends
@@ -46,8 +54,8 @@ public class ReadRegisters {
 			try {
 				proxy.getConnection().connect();
 				transaction = new ModbusTCPTransaction(proxy.getConnection());
-				transaction.setRequest(new ReadCoilsRequest(proxy.getRef(),
-						proxy.getCount()));
+				transaction.setRequest(new ReadInputRegistersRequest(proxy
+						.getRef(), proxy.getCount()));
 				int k = 0;
 				do {
 					try {
@@ -55,18 +63,18 @@ public class ReadRegisters {
 					} catch (ModbusException e) {
 						e.printStackTrace();
 					}
-					ReadCoilsResponse response = (ReadCoilsResponse) transaction
+					ReadInputRegistersResponse response = (ReadInputRegistersResponse) transaction
 							.getResponse();
 					KrollDict result = new KrollDict();
-					result.put("bitcount", response.getBitCount());
+					result.put("byteCount", response.getByteCount());
+					result.put("dataLength", response.getDataLength());
+					result.put("hexMessage", response.getHexMessage());
+					List<String> registers = new ArrayList<String>();
+					for (InputRegister register : response.getRegisters()) {
+						registers.add(register.toString());
+					}
+					result.put("registers", registers.toArray());
 					result.put("datalength", response.getDataLength());
-					KrollDict coils = new KrollDict();
-					coils.put("bytesize", response.getCoils().byteSize());
-					coils.put("isLSBAccess", response.getCoils().isLSBAccess());
-					coils.put("isMSBAccess", response.getCoils().isMSBAccess());
-					coils.put("bytes", org.appcelerator.titanium.TiBlob
-							.blobFromData(response.getCoils().getBytes()));
-					result.put("discretes", coils);
 					resList.add(result);
 					k++;
 				} while (k < proxy.getRepeat());

@@ -31,7 +31,7 @@ import org.appcelerator.titanium.TiC;
 
 import de.appwerft.modbus.Requests.ReadCoils;
 import de.appwerft.modbus.Requests.ReadInputDiscretes;
-import de.appwerft.modbus.Requests.ReadRegisters;
+import de.appwerft.modbus.Requests.ReadInputRegisters;
 import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
@@ -115,7 +115,7 @@ public class MasterConnectionProxy extends KrollProxy {
 
 	@Kroll.method
 	public void readRegisters(KrollDict opts) {
-		new ReadRegisters(this);
+		new ReadInputRegisters(this);
 	}
 
 	@Kroll.method

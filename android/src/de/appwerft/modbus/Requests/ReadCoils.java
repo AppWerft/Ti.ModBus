@@ -21,6 +21,7 @@ import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 
 import de.appwerft.modbus.MasterConnectionProxy;
+import de.appwerft.modbus.RequestProxy;
 import android.os.AsyncTask;
 
 public class ReadCoils {
@@ -29,7 +30,13 @@ public class ReadCoils {
 	public ReadCoils(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
-		doRequest.execute(proxy);
+		doRequest.execute();
+	}
+
+	public ReadCoils(RequestProxy proxy) {
+		this.proxy = proxy;
+		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
+		doRequest.execute();
 	}
 
 	private final class ModBusHandler extends
