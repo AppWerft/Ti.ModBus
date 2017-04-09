@@ -25,16 +25,16 @@ import de.appwerft.modbus.MasterConnectionProxy;
 import de.appwerft.modbus.RequestProxy;
 import android.os.AsyncTask;
 
-public class ReadInputRegisters {
+public class ReadMultipleRegisters {
 	KrollProxy proxy;
 
-	public ReadInputRegisters(MasterConnectionProxy proxy) {
+	public ReadMultipleRegisters(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();
 	}
 
-	public ReadInputRegisters(RequestProxy proxy) {
+	public ReadMultipleRegisters(RequestProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();

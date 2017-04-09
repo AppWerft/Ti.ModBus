@@ -105,7 +105,6 @@ public class RequestProxy extends KrollProxy {
 			case Modbus.READ_MULTIPLE_REGISTERS:
 				new ReadMultipleRegisters(this);
 				break;
-
 			case Modbus.WRITE_MULTIPLE_REGISTERS:
 				new WriteMultipleRegisters(this);
 				break;
