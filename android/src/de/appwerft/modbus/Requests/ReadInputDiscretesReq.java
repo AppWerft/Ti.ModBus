@@ -6,7 +6,7 @@
  * Please see the LICENSE included with this distribution for details.
  *
  */
-package de.appwerft.modbus;
+package de.appwerft.modbus.Requests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +20,13 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 
+import de.appwerft.modbus.MasterConnectionProxy;
 import android.os.AsyncTask;
 
-public class TiReadInputDiscretesRequest {
+public class ReadInputDiscretesReq {
 	KrollProxy proxy;
 
-	public TiReadInputDiscretesRequest(MasterConnectionProxy proxy) {
+	public ReadInputDiscretesReq(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute(proxy);
@@ -43,13 +44,10 @@ public class TiReadInputDiscretesRequest {
 			List<KrollDict> resList = new ArrayList<KrollDict>();
 
 			try {
-				proxy.conn.connect();
-
-				// Prepare the request
-				ReadInputDiscretesRequest req = new ReadInputDiscretesRequest(
-						proxy.ref, proxy.count);
-				transaction = new ModbusTCPTransaction(proxy.conn);
-				transaction.setRequest(req);
+				proxy.getConnection().connect();
+				transaction = new ModbusTCPTransaction(proxy.getConnection());
+				transaction.setRequest(new ReadInputDiscretesRequest(proxy
+						.getRef(), proxy.getCount()));
 				int k = 0;
 				do {
 					try {
@@ -74,7 +72,7 @@ public class TiReadInputDiscretesRequest {
 					result.put("discretes", discretes);
 					resList.add(result);
 					k++;
-				} while (k < proxy.repeat);
+				} while (k < proxy.getRepeat());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

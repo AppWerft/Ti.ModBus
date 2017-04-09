@@ -11,7 +11,7 @@ license: Specify your license
 copyright: Copyright (c) 2017 by 
 
 # these should not be edited
-name: modbus
+name: ModBus
 moduleid: de.appwerft.modbus
 guid: 8ed320fd-8b5d-4ddb-8aeb-b06bf8846c99
 platform: android

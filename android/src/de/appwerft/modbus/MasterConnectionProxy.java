@@ -29,6 +29,7 @@ import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiC;
 
+import de.appwerft.modbus.Requests.ReadInputDiscretesReq;
 import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
@@ -36,15 +37,27 @@ import android.os.AsyncTask;
 public class MasterConnectionProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "Modbus";
-	TCPMasterConnection conn;
+	private TCPMasterConnection conn;
 	static int DEFAULTPORT = 502;
-	int ref = 0;
-	int count = 0;
-	int repeat = 1;
+	private int ref = 0;
+	private int count = 0;
+	private int repeat = 1;
 	public KrollObject krollObject = getKrollObject();
 
 	public TCPMasterConnection getConnection() {
 		return conn;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public int getRepeat() {
+		return repeat;
+	}
+
+	public int getRef() {
+		return ref;
 	}
 
 	private void createConn(KrollDict opts) {
@@ -90,8 +103,7 @@ public class MasterConnectionProxy extends KrollProxy {
 
 	@Kroll.method
 	public void readInputDiscretesRequest(KrollDict opts) {
-
-		TiReadInputDiscretesRequest req = new TiReadInputDiscretesRequest(this);
+		new ReadInputDiscretesReq(this);
 
 	}
 }

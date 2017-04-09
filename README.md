@@ -44,7 +44,8 @@ var Connection = Modbus.createMasterConnection({
 	url : "modbus://192.168.0.1:502",
 	count : 3,
 	ref : 1,
-	timeout : 3000
+	timeout : 3000,
+	type : ModBus.TYPE_TCP
 });
 Connection.readInputDiscretesRequest({
 	onLoad : function() {

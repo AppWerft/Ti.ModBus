@@ -1,0 +1,22 @@
+%define lookup-function-name lookupGeneratedInit
+%define class-name ModbusBindings
+%{
+
+#include <string.h>
+#include <v8.h>
+#include <KrollBindings.h>
+
+#include "de.appwerft.modbus.ModbusModule.h"
+#include "de.appwerft.modbus.SimpleProcessImageProxy.h"
+#include "de.appwerft.modbus.MasterConnectionProxy.h"
+#include "de.appwerft.modbus.CouplerModule.h"
+
+
+%}
+struct titanium::bindings::BindEntry;
+%%
+de.appwerft.modbus.ModbusModule, ::de::appwerft::modbus::ModbusModule::bindProxy, ::de::appwerft::modbus::ModbusModule::dispose
+de.appwerft.modbus.SimpleProcessImageProxy, ::de::appwerft::modbus::modbus::SimpleProcessImageProxy::bindProxy, ::de::appwerft::modbus::modbus::SimpleProcessImageProxy::dispose
+de.appwerft.modbus.MasterConnectionProxy, ::de::appwerft::modbus::modbus::MasterConnectionProxy::bindProxy, ::de::appwerft::modbus::modbus::MasterConnectionProxy::dispose
+de.appwerft.modbus.CouplerModule, ::de::appwerft::modbus::modbus::CouplerModule::bindProxy, ::de::appwerft::modbus::modbus::CouplerModule::dispose
+%%
