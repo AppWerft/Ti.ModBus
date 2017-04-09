@@ -50,11 +50,9 @@ var Connection = Modbus.createMasterConnection({
 });
 
 Connection.request({
-	functionId : Modbus.READ_MULTIPLE_REGISTERS,
-	onLoad : function() {
-	},
-	onError : function() {
-	}
+	"Modbus.READ_MULTIPLE_REGISTERS",
+	function() {/* success */},
+	function() {/* error */}
 });
 ```
 Available functionIds:
