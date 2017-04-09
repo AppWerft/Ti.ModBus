@@ -37,6 +37,18 @@ The stateless communication is based on a simple package, that is called Protoco
 Quick start Master
 ------------------
 
+Available functionIds:
+```javascript
+Modbus.READ_MULTIPLE_REGISTERS:
+Modbus.READ_INPUT_DISCRETES:
+Modbus.READ_INPUT_REGISTERS:
+Modbus.READ_COILS:
+Modbus.WRITE_MULTIPLE_REGISTERS:
+Modbus.WRITE_SINGLE_REGISTER:
+Modbus.WRITE_COIL:
+Modbus.WRITE_MULTIPLE_COILS:
+```
+
 ```javascript
 var Modbus = require("de.appwerft.modbus");
 
@@ -45,8 +57,17 @@ var Connection = Modbus.createMasterConnection({
 	count : 3,
 	ref : 1,
 	timeout : 3000,
-	type : ModBus.TYPE_TCP
+	type : ModBus.TYPE_TCP // or ModBus.TYPE_UDP
 });
+
+Connection.request({
+	functionId : Modbus.READ_MULTIPLE_REGISTERS,
+	onLoad : function() {
+	},
+	onError : function() {
+	}
+});
+
 Connection.readMultipleRegisters({
 	onLoad : function() {
 	},
