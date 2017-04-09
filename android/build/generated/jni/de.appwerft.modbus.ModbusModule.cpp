@@ -97,6 +97,15 @@ Local<FunctionTemplate> ModbusModule::getProxyTemplate(Isolate* isolate)
 		titanium::Proxy::setIndexedProperty);
 
 	// Constants --------------------------------------------------------------
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		LOGE(TAG, "Failed to get environment in ModbusModule");
+		//return;
+	}
+
+
+		DEFINE_INT_CONSTANT(isolate, prototypeTemplate, "TYPE_TCP", 0);
+
 
 	// Dynamic properties -----------------------------------------------------
 
