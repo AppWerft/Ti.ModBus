@@ -13,8 +13,8 @@ import java.util.List;
 
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
-import net.wimpi.modbus.msg.ReadInputDiscretesRequest;
-import net.wimpi.modbus.msg.ReadInputDiscretesResponse;
+import net.wimpi.modbus.msg.WriteMultipleCoilsRequest;
+import net.wimpi.modbus.msg.WriteMultipleCoilsResponse;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
@@ -24,16 +24,16 @@ import de.appwerft.modbus.MasterConnectionProxy;
 import de.appwerft.modbus.RequestProxy;
 import android.os.AsyncTask;
 
-public class ReadInputDiscretes {
+public class WriteMultipleCoils {
 	KrollProxy proxy;
 
-	public ReadInputDiscretes(MasterConnectionProxy proxy) {
+	public WriteMultipleCoils(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();
 	}
 
-	public ReadInputDiscretes(RequestProxy proxy) {
+	public WriteMultipleCoils(RequestProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();
@@ -53,7 +53,7 @@ public class ReadInputDiscretes {
 			try {
 				proxy.getConnection().connect();
 				transaction = new ModbusTCPTransaction(proxy.getConnection());
-				transaction.setRequest(new ReadInputDiscretesRequest(proxy
+				transaction.setRequest(new WriteMultipleCoilsRequest(proxy
 						.getRef(), proxy.getCount()));
 				int k = 0;
 				do {
@@ -62,21 +62,20 @@ public class ReadInputDiscretes {
 					} catch (ModbusException e) {
 						e.printStackTrace();
 					}
-					ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) transaction
+					WriteMultipleCoilsResponse response = (WriteMultipleCoilsResponse) transaction
 							.getResponse();
 					KrollDict result = new KrollDict();
-					result.put("bitcount", response.getBitCount());
+					// result.put("bitcount", response.getBitCount());
 					result.put("datalength", response.getDataLength());
-					KrollDict discretes = new KrollDict();
-					discretes.put("bytesize", response.getDiscretes()
-							.byteSize());
-					discretes.put("isLSBAccess", response.getDiscretes()
-							.isLSBAccess());
-					discretes.put("isMSBAccess", response.getDiscretes()
-							.isMSBAccess());
-					discretes.put("bytes", org.appcelerator.titanium.TiBlob
-							.blobFromData(response.getDiscretes().getBytes()));
-					result.put("discretes", discretes);
+					KrollDict coils = new KrollDict();
+					// coils.put("bytesize", response.getCoils().byteSize());
+					// coils.put("isLSBAccess",
+					// response.getCoils().isLSBAccess());
+					// coils.put("isMSBAccess",
+					// response.getCoils().isMSBAccess());
+					// coils.put("bytes", org.appcelerator.titanium.TiBlob
+					// .blobFromData(response.getCoils().getBytes()));
+					result.put("discretes", coils);
 					resList.add(result);
 					k++;
 				} while (k < proxy.getRepeat());

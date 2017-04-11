@@ -42,6 +42,11 @@ import org.appcelerator.titanium.TiC;
 import de.appwerft.modbus.Requests.ReadCoils;
 import de.appwerft.modbus.Requests.ReadInputDiscretes;
 import de.appwerft.modbus.Requests.ReadInputRegisters;
+import de.appwerft.modbus.Requests.ReadMultipleRegisters;
+import de.appwerft.modbus.Requests.WriteCoil;
+import de.appwerft.modbus.Requests.WriteMultipleCoils;
+import de.appwerft.modbus.Requests.WriteMultipleRegisters;
+import de.appwerft.modbus.Requests.WriteSingleRegister;
 import android.os.AsyncTask;
 
 // This proxy can be created by calling Modbus.createExample({message: "hello world"})
@@ -120,10 +125,8 @@ public class RequestProxy extends KrollProxy {
 			default:
 				request = new IllegalFunctionRequest(functionCode);
 				break;
-
 			}
 		}
-
 	}
 
 	@Kroll.method

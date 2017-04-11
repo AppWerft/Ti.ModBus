@@ -8,13 +8,16 @@
  */
 package de.appwerft.modbus.Requests;
 
+import java.io.DataOutput;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
-import net.wimpi.modbus.msg.ReadInputDiscretesRequest;
-import net.wimpi.modbus.msg.ReadInputDiscretesResponse;
+import net.wimpi.modbus.msg.ReadInputRegistersRequest;
+import net.wimpi.modbus.msg.ReadInputRegistersResponse;
+import net.wimpi.modbus.msg.WriteSingleRegisterRequest;
+import net.wimpi.modbus.procimg.InputRegister;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
@@ -24,16 +27,16 @@ import de.appwerft.modbus.MasterConnectionProxy;
 import de.appwerft.modbus.RequestProxy;
 import android.os.AsyncTask;
 
-public class ReadInputDiscretes {
+public class WriteSingleRegister {
 	KrollProxy proxy;
 
-	public ReadInputDiscretes(MasterConnectionProxy proxy) {
+	public WriteSingleRegister(MasterConnectionProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();
 	}
 
-	public ReadInputDiscretes(RequestProxy proxy) {
+	public WriteSingleRegister(RequestProxy proxy) {
 		this.proxy = proxy;
 		AsyncTask<MasterConnectionProxy, Void, List<KrollDict>> doRequest = new ModBusHandler();
 		doRequest.execute();
@@ -53,8 +56,11 @@ public class ReadInputDiscretes {
 			try {
 				proxy.getConnection().connect();
 				transaction = new ModbusTCPTransaction(proxy.getConnection());
-				transaction.setRequest(new ReadInputDiscretesRequest(proxy
-						.getRef(), proxy.getCount()));
+				WriteSingleRegisterRequest req = new WriteSingleRegisterRequest();
+				req.setReference(proxy.getRef());
+				DataOutput dout = null;
+				req.writeData(dout);
+				transaction.setRequest(req);
 				int k = 0;
 				do {
 					try {
@@ -62,21 +68,18 @@ public class ReadInputDiscretes {
 					} catch (ModbusException e) {
 						e.printStackTrace();
 					}
-					ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) transaction
+					ReadInputRegistersResponse response = (ReadInputRegistersResponse) transaction
 							.getResponse();
 					KrollDict result = new KrollDict();
-					result.put("bitcount", response.getBitCount());
+					result.put("byteCount", response.getByteCount());
+					result.put("dataLength", response.getDataLength());
+					result.put("hexMessage", response.getHexMessage());
+					List<String> registers = new ArrayList<String>();
+					for (InputRegister register : response.getRegisters()) {
+						registers.add(register.toString());
+					}
+					result.put("registers", registers.toArray());
 					result.put("datalength", response.getDataLength());
-					KrollDict discretes = new KrollDict();
-					discretes.put("bytesize", response.getDiscretes()
-							.byteSize());
-					discretes.put("isLSBAccess", response.getDiscretes()
-							.isLSBAccess());
-					discretes.put("isMSBAccess", response.getDiscretes()
-							.isMSBAccess());
-					discretes.put("bytes", org.appcelerator.titanium.TiBlob
-							.blobFromData(response.getDiscretes().getBytes()));
-					result.put("discretes", discretes);
 					resList.add(result);
 					k++;
 				} while (k < proxy.getRepeat());
@@ -91,7 +94,5 @@ public class ReadInputDiscretes {
 			if (onLoad != null)
 				onLoad.call(proxy.getKrollObject(), resultList.toArray());
 		}
-
 	}
-
 }
