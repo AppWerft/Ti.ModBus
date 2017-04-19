@@ -1,7 +1,7 @@
 Ti.ModBus
 =========
 
-This Titanium module realized a gateway to TCP based [modbus protocol](https://en.wikipedia.org/wiki/Modbus) 
+This Titanium module realized a gateway to TCP based [modbus protocol](https://en.wikipedia.org/wiki/Modbus) . With this module can can control TCP/IP based Modbus by Javascript.
 
 <img src="https://home-assistant.io/images/supported_brands/modbus.png" width=480 />
 
